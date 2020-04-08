@@ -116,6 +116,7 @@ const INSTRUCTIONS = {
 const VALID_CHARS = 'MISCis5ocO0L!'
 
 function parse_code(code) {
+    code = code.replace(/(\s|\n)/g, '')
     var instructions = []
     var i = 0
     while(i < code.length) {
