@@ -1,7 +1,78 @@
 @import 'vars'
 
-html, body
+html, body, #app
+  height: 100%
   margin: 0
   padding: 0
   background: $black
   color: $light-grey
+  font-family: 'TT Commons'
+
+h1, h2, h3, h4, h5, h6
+  font-family: 'Source Sans Pro'
+  font-weight: bold
+
+=section
+  background: darken($dark-grey, 5%)
+  border: 1px solid darken($dark-grey, 10%)
+  color: $light-grey
+
+button
+  background: darken($dark-grey, 5%)
+  border: 1px solid darken($dark-grey, 10%)
+  color: $light-grey
+  padding: 8px 12px
+  text-transform: uppercase
+  font-family: 'Source Sans Pro'
+  font-weight: 800
+  font-size: 12px
+  width: 100%
+  &:hover
+    cursor: pointer
+    background: darken($mid-grey, 15%)
+
+.wrapper
+  height: calc(100% - 2 * 24px)
+  width: calc(100% - 9 * 16px)
+  margin: 0 24px
+  display: grid
+  grid-template-columns: 25% 45% 35%
+  grid-template-rows: 8% 62% 30%
+  grid-gap: 16px
+  .title
+    font-family: 'Source Sans Pro'
+    font-weight: bold
+    font-size: 36px
+    margin-top: 16px
+    grid-column: 1 / span 2
+  .left-panel
+    grid-column: 1
+    grid-row: 2
+    display: grid
+    grid-template-rows: 8% 92%
+  .graphical-area
+    grid-column: 2
+    grid-row: 2
+  .text-area
+    grid-column: 3
+    grid-row: 2
+  .status-area
+    grid-column: 1 / span 3
+    grid-row: 3
+
+.left-panel,.task-area,.graphical-area,.text-area,.status-area
+  width: 100%
+  height: 100%
+  +section
+
+.left-panel
+  .control-buttons
+    display: flex
+    flex-wrap: nowrap
+    justify-content: space-between
+
+.text-area
+  textarea
+    width: 100%
+    height: 100%
+    resize: none
