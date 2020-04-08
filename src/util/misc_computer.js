@@ -121,7 +121,7 @@ function parse_code(code) {
     while(i < code.length) {
         let opcode = code[i]
         if(!INSTRUCTIONS[opcode]) {
-            throw new Error('Invalid opcode ' + opcode + 'at index ' + i)
+            throw new Error('Invalid opcode ' + opcode + ' at index ' + i)
         } else {
             var nargs = INSTRUCTIONS[opcode][1]
             var args = []
