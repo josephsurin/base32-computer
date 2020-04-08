@@ -154,6 +154,22 @@ class MISCComputer {
         this.instructions = parse_code(code)
     }
 
+    get_eip() {
+        return this.eip
+    }
+
+    get_ic() {
+        return this.ic
+    }
+
+    get_inputs() {
+        return this.inputs
+    }
+
+    get_instructions() {
+        return this.instructions
+    }
+
     get_status() {
         return this.status
     }
