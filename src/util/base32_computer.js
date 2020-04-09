@@ -97,23 +97,23 @@ function exit_op(mc, args) {
     mc.status = Status_Code.EXITED
 }
 
+const VALID_CHARS = 'ABCDEFGHIJKLMOPQRSTUVWXYZ234567'
+
 const INSTRUCTIONS = {
-    's': ['Addition', 3, add_op],
+    'A': ['Addition', 3, add_op],
     'S': ['Subtraction', 3, sub_op],
     'M': ['Multiplication', 3, mul_op],
-    '!': ['Logical Negation', 2, neg_op],
-    'O': ['XOR', 3, xor_op],
-    'i': ['Input', 1, inp_op],
-    'o': ['Output []ASCII]', 1, out_ascii_op],
-    '0': ['Output []Value]', 1, out_val_op],
+    'N': ['Logical Negation', 2, neg_op],
+    'X': ['XOR', 3, xor_op],
+    'I': ['Input', 1, inp_op],
+    'O': ['Output (ASCII)', 1, out_ascii_op],
+    'V': ['Output (Value)', 1, out_val_op],
     'L': ['Less Than', 3, lt_op],
-    'I': ['Equals', 3, eq_op],
-    'c': ['Jump If True', 2, jit_op],
-    'C': ['Jump If False', 2, jif_op],
-    '5': ['Exit', 0, exit_op]
+    'E': ['Equals', 3, eq_op],
+    'T': ['Jump If True', 2, jit_op],
+    'F': ['Jump If False', 2, jif_op],
+    'Q': ['Exit', 0, exit_op]
 }
-
-const VALID_CHARS = 'MISCis5ocO0L!'
 
 function parse_code(code) {
     code = code.replace(/(\s|\n)/g, '')
@@ -211,4 +211,4 @@ class MISCComputer {
     }
 }
 
-module.exports = MISCComputer
+module.exports = { MISCComputer, Status_Code, INSTRUCTIONS, VALID_CHARS }
