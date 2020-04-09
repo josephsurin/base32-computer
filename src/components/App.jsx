@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-const MISCComputer = require('../util/misc_computer')
+const { Base32Computer, Status_Code } = require('../util/base32_computer')
 
 export default class App extends Component {
     constructor(props) {
@@ -22,7 +22,7 @@ export default class App extends Component {
 
     load_code() {
         try {
-            var MC = new MISCComputer(this.state.code)
+            var MC = new Base32Computer(this.state.code)
             this.setState({ MC })
             return MC
         } catch(e) {
@@ -35,7 +35,7 @@ export default class App extends Component {
             var step_interval = null
             step_interval = setInterval(() => {
                 var status = this.step_code()
-                if(status != 51) {
+                if(status != Status_Code.EXECUTING) {
                     clearInterval(step_interval)
                 }
             }, 50)
@@ -73,7 +73,7 @@ export default class App extends Component {
         let outputs = MC ? MC.get_outputs() : null
         return (
             <div className="wrapper">
-                <div className="title">MISC Computer</div>
+                <div className="title">Base32 Computer</div>
                 <div className="left-panel">
                     <div className="control-buttons">
                         <button onClick={this.run_code}>Run</button>
