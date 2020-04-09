@@ -141,7 +141,7 @@ function parse_code(code) {
     return instructions
 }
 
-class MISCComputer {
+class Base32Computer {
     constructor(code) {
         this.eip = 0
         this.ic = 0
@@ -211,4 +211,4 @@ class MISCComputer {
     }
 }
 
-module.exports = { MISCComputer, Status_Code, INSTRUCTIONS, VALID_CHARS }
+module.exports = { Base32Computer, Status_Code, INSTRUCTIONS, VALID_CHARS }
