@@ -129,7 +129,7 @@ function parse_code(code) {
             for(var j = i + 1; j < i + 1 + nargs; j++) {
                 var arg = code[j]
                 if(!VALID_CHARS.includes(arg)) {
-                    throw new Error('Invalid char ' + arg + ' at index '+ i)
+                    throw new Error('Invalid char ' + arg + ' at index ' + j)
                 } else {
                     args.push(arg)
                 }
