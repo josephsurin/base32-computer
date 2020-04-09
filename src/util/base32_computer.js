@@ -211,4 +211,4 @@ class Base32Computer {
     }
 }
 
-module.exports = { Base32Computer, Status_Code, INSTRUCTIONS, VALID_CHARS }
+module.exports = { Base32Computer, Status_Code, INSTRUCTIONS, VALID_CHARS, parse_code }
