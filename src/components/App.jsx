@@ -9,7 +9,8 @@ export default class App extends Component {
         this.state = {
             code: '',
             B32C: null,
-            graphical: null
+            graphical: null,
+            error_msg: ''
         }
 
         this.graphical_ref = React.createRef()
@@ -22,13 +23,15 @@ export default class App extends Component {
 
     edit_code_text(e) {
         let { graphical } = this.state
+        var error_msg = ''
         try {
             graphical = create_ins_blocks(e.target.value, 0)
+            error_msg = 'Character Count: ' + e.target.value.replace(/(\s|\n)/g, '').length
         } catch(e) {
-            alert(e)
             console.log('Error creating graphical instruction blocks')
+            error_msg = e.toString()
         }
-        this.setState({ code: e.target.value, graphical, B32C: null })
+        this.setState({ code: e.target.value, graphical, B32C: null, error_msg })
     }
 
     load_code() {
@@ -37,7 +40,7 @@ export default class App extends Component {
             this.setState({ B32C })
             return B32C
         } catch(e) {
-            alert('Error parsing code ' + e)
+            console.log('Error parsing code ' + e)
         }
     }
 
@@ -51,15 +54,19 @@ export default class App extends Component {
                 }
             }, 50)
         } catch(e) {
-            this.forceUpdate()
-            alert('Runtime Error ' + e)
+            console.log('Runtime Error ' + e)
+            this.setState({ error_msg: e.toString() })
         }
     }
 
     step_code() {
         var B32C = null
         if(!this.state.B32C) {
-            B32C = this.load_code()
+            try {
+                B32C = this.load_code()
+            } catch(e) {
+                console.log('Step Error ' + e)
+            }
         } else {
             B32C = this.state.B32C
             if(B32C.get_status() != Status_Code.EXECUTING && B32C.get_status() != Status_Code.INITIALISED) return false
@@ -72,8 +79,8 @@ export default class App extends Component {
             this.setState({ graphical })
             return status
         } catch(e) {
-            this.forceUpdate()
-            alert('Runtime Error ' + e)
+            console.log('Runtime Error ' + e)
+            this.setState({ error_msg: e.toString() })
         }
     }
 
@@ -82,7 +89,7 @@ export default class App extends Component {
     }
 
     render() {
-        let { code, B32C, graphical } = this.state
+        let { code, B32C, graphical, error_msg } = this.state
         let eip = B32C ? B32C.get_eip() : '-'
         let status = B32C ? B32C.get_status() : -1
         status = Object.keys(Status_Code).find(x => Status_Code[x] == status) || 'OFF'
@@ -110,6 +117,7 @@ export default class App extends Component {
                 <div className="text-area">
                     <textarea value={code}
                         onChange={this.edit_code_text} />
+                    <div className="code-error">{error_msg}</div>
                 </div>
                 <div className="status-area">
                     <div className="status-bar">
