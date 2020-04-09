@@ -79,3 +79,52 @@ button
     resize: none
     font-family: Inconsolata
     +section
+
+.status-area
+  display: grid
+  grid-template-rows: 24px auto 15% 25%
+  .status-bar
+    width: 100%
+    height: 100%
+    border-bottom: 1px solid darken($dark-grey, 10%)
+    display: grid
+    grid-template-columns: 10% auto 10%
+    align-items: center
+    font-family: 'Source Sans Pro'
+    font-weight: 800
+    font-size: 13px
+    text-transform: uppercase
+    .status-eip
+      margin-left: 8px
+    .status-code
+      justify-self: end
+      margin-right: 8px
+  .memory-area-not-running
+    text-align: center
+    text-transform: uppercase
+  .memory-area
+    width: 100%
+    height: 100%
+    display: flex
+    flex-wrap: nowrap
+    overflow-y: auto
+    .memory-block
+      width: auto
+      height: 60px
+      border: 1px solid darken($dark-grey, 10%)
+      font-family: Inconsolata
+      text-align: center
+      .memory-loc
+        padding: 6px 14px
+        border-bottom: 1px solid darken($dark-grey, 10%)
+      .memory-val
+        padding: 6px 14px
+  .inputs-area, .outputs-area
+    width: 100%
+    height: 100%
+    +section
+    vertical-align: middle
+    overflow-y: auto
+    .inputs, .outputs
+      font-family: Inconsolata
+      padding: 8px
