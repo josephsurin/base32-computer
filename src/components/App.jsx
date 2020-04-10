@@ -18,6 +18,7 @@ export default class App extends Component {
             task_message: ''
         }
 
+        this.stopped = false
         this.graphical_ref = React.createRef()
 
         // Code Functions
@@ -63,16 +64,19 @@ export default class App extends Component {
         })
     }
 
-    run_code() {
+    run_code(delay=50) {
         return new Promise(res => {
             try {
+                this.stopped = false
                 var finished = false
                 var B32C = null
-                promise_while(() => !finished, () => {
+                promise_while(() => (!this.stopped && !finished), () => {
+                    console.log(this.stopped, finished)
                     return new Promise(res1 => {
-                        sleep(100).then(() => {
+                        sleep(delay).then(() => {
+                            if(this.stopped) return res1()
                             this.step_code().then(b => {
-                                if(!b || b.get_status() != Status_Code.EXECUTING) finished = true
+                                if(!b || b.get_status() != Status_Code.EXECUTING || this.stopped) finished = true
                                 B32C = b
                                 return res1()
                             })
@@ -118,6 +122,8 @@ export default class App extends Component {
 
     reset_code() {
         var graphical = create_ins_blocks(this.state.code, 0)
+        this.graphical_ref.current.scrollTo(0, 0)
+        this.stopped = true
         this.setState({ B32C: null, graphical, task_message: '' })
     }
 
@@ -130,7 +136,7 @@ export default class App extends Component {
                         if(!B32C) return res('bad')
                         var task_message = 'Running test ' + i + '... '
                         this.setState({ B32C, task_message }, () => {
-                            this.run_code().then(B32C => {
+                            this.run_code(25).then(B32C => {
                                 var passed = equals(B32C.get_outputs(), TASKS[task].outputs[i])
                                 task_message += passed ? 'PASSED' : 'FAILED'
                                 this.setState({ task_message }, () => {
