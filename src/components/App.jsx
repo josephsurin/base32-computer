@@ -107,7 +107,7 @@ export default class App extends Component {
                     B32C.step()
                     var eip = B32C.get_eip()
                     var graphical = create_ins_blocks(this.state.code, eip)
-                    this.graphical_ref.current.scrollTo(0, (eip - 2) * 36)
+                    this.graphical_ref.current.scrollTo(0, (eip - 2) * 38)
                     this.setState({ B32C, graphical }, () => {
                         return res(B32C)
                     })
@@ -200,7 +200,7 @@ export default class App extends Component {
                     <div className="task-area">
                         <div className="task-details">
                             <div className="task-name">{task_name}</div>
-                            <div className="task-desc">{task_desc}</div>
+                            <div className="task-desc" dangerouslySetInnerHTML={{ __html: task_desc }}></div>
                             <div className="task-inps-wrapper">Example input: <br/>
                                 <div className="task-inps">{JSON.stringify(task_inps)}</div>
                             </div>
