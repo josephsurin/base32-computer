@@ -28,6 +28,8 @@
     "webpack-dev-server": "^3.10.3"
   },
   "dependencies": {
+    "array-equal": "^1.0.0",
+    "bluebird": "^3.7.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   }
