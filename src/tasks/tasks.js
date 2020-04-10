@@ -14,7 +14,16 @@ const TASK_1 = {
     outputs: [[6], [-6], [0], [7986]]
 }
 
+const TASK_2 = {
+    id: 2,
+    name: 'Hello, World!',
+    desc: 'Write a program that outputs the ascii characters "Hello, World!"',
+    inputs: [[]],
+    outputs: [['H', 'e', 'l', 'l', 'o', ',', ' ', 'W', 'o', 'r', 'l', 'd', '!']]
+}
+
 module.exports = [
     TASK_0,
-    TASK_1
+    TASK_1,
+    TASK_2
 ]
