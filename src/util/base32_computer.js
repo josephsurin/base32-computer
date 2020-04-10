@@ -97,7 +97,7 @@ function exit_op(mc, args) {
     mc.status = Status_Code.EXITED
 }
 
-const VALID_CHARS = 'ABCDEFGHIJKLMOPQRSTUVWXYZ234567'
+const VALID_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'
 
 const INSTRUCTIONS = {
     'A': ['Addition', 3, add_op],
