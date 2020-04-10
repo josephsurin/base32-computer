@@ -208,6 +208,7 @@ export default class App extends Component {
                         </div>
                         <div className="control-buttons">
                             <button onClick={this.prev_task}>Prev</button>
+                            <button>{task+1}/{TASKS.length}</button>
                             <button onClick={this.next_task}>Next</button>
                         </div>
                     </div>
