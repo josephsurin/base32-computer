@@ -16,13 +16,25 @@ export function create_ins_blocks(code, active=0) {
     ))
 }
 
+export function save_task_status(task, code, solved) {
+    var task_storage = localStorage.getItem('tasks')
+    if(!task_storage) {
+        task_storage = {}
+    } else {
+        task_storage = JSON.parse(task_storage)
+    }
+    var task_status = { id: task, code, solved }
+    task_storage[task] = task_status
+    localStorage.setItem('tasks', JSON.stringify(task_storage))
+}
+
 export function get_task_status(task) {
     var task_storage = localStorage.getItem('tasks')
     if(!task_storage) {
         return { id: task, solved: false }
     }
     task_storage = JSON.parse(task_storage)
-    var task_status = task_status[task]
+    var task_status = task_storage[task]
     if(!task_status) {
         return { id: task, solved: false }
     }

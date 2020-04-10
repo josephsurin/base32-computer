@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 const equals = require('array-equal')
 
 const { Base32Computer, Status_Code } = require('../util/base32_computer')
-const { create_ins_blocks, get_task_status, promise_while, sleep } = require('../util/util')
+const { create_ins_blocks, save_task_status, get_task_status, promise_while, sleep } = require('../util/util')
 const TASKS = require('../tasks/tasks')
 
 export default class App extends Component {
@@ -121,24 +121,24 @@ export default class App extends Component {
     }
 
     submit_code() {
-        let { task } = this.state
-        task = TASKS[task]
-        var task_promises = task.inputs.map((inps, i) => {
+        let { task, code } = this.state
+        var task_promises = TASKS[task].inputs.map((inps, i) => {
             return () => {
                 return new Promise(res => {
                     this.load_code(inps).then(B32C => {
                         if(!B32C) return res('bad')
                         this.setState({ B32C }, () => {
                             this.run_code().then(B32C => {
-                                return res(equals(B32C.get_outputs(), task.outputs[i]))
+                                return res(equals(B32C.get_outputs(), TASKS[task].outputs[i]))
                             })
                         })
                     })
                 })
             }
         })
-        task_promises.reduce((p, f) => p.then(() => sleep(100).then(f)), Promise.resolve([])).then(accepted => {
-
+        task_promises.reduce((p, f) => p.then(() => sleep(100).then(f)), Promise.resolve([])).then(solved => {
+            save_task_status(task, code, solved)
+            this.setState(this.state)
         })
     }
 
@@ -193,7 +193,7 @@ export default class App extends Component {
                             </div>
                         </div>
                         <div className="task-status">
-                            <div className="task-status-wrapper">Status: <span className={"task-status-accepted " + task_status.solved}>{task_status.solved ? 'Accepted' : 'Not Solved'}</span>
+                            <div className="task-status-wrapper">Status: <span className={"task-status-solved " + task_status.solved}>{task_status.solved ? 'Solved' : 'Not Solved'}</span>
                             </div>
                         </div>
                         <div className="control-buttons">
