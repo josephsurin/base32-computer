@@ -14,7 +14,8 @@ export default class App extends Component {
             B32C: null,
             graphical: null,
             error_msg: '',
-            task: 0
+            task: 0,
+            task_message: ''
         }
 
         this.graphical_ref = React.createRef()
@@ -117,7 +118,7 @@ export default class App extends Component {
 
     reset_code() {
         var graphical = create_ins_blocks(this.state.code, 0)
-        this.setState({ B32C: null, graphical })
+        this.setState({ B32C: null, graphical, task_message: '' })
     }
 
     submit_code() {
@@ -127,18 +128,26 @@ export default class App extends Component {
                 return new Promise(res => {
                     this.load_code(inps).then(B32C => {
                         if(!B32C) return res('bad')
-                        this.setState({ B32C }, () => {
+                        var task_message = 'Running test ' + i + '... '
+                        this.setState({ B32C, task_message }, () => {
                             this.run_code().then(B32C => {
-                                return res(equals(B32C.get_outputs(), TASKS[task].outputs[i]))
+                                var passed = equals(B32C.get_outputs(), TASKS[task].outputs[i])
+                                task_message += passed ? 'PASSED' : 'FAILED'
+                                this.setState({ task_message }, () => {
+                                    return res(passed)
+                                })
                             })
                         })
                     })
                 })
             }
         })
-        task_promises.reduce((p, f) => p.then(() => sleep(100).then(f)), Promise.resolve([])).then(solved => {
+        task_promises.reduce((p, f) => p.then((r) => sleep(100).then(() => f().then(Array.prototype.concat.bind(r)))), Promise.resolve([])).then(solves => {
+            var solved = solves.every(x => x)
             save_task_status(task, code, solved)
-            this.setState(this.state)
+            var task_message = solved ? 'All tests PASSED' : 'Some tests FAILED'
+            console.log(task_message)
+            this.setState({ task_message })
         })
     }
 
@@ -157,7 +166,7 @@ export default class App extends Component {
     }
 
     render() {
-        let { code, B32C, graphical, error_msg, task } = this.state
+        let { code, B32C, graphical, error_msg, task, task_message } = this.state
         let eip = B32C ? B32C.get_eip() : '-'
         let status = B32C ? B32C.get_status() : -1
         status = Object.keys(Status_Code).find(x => Status_Code[x] == status) || 'OFF'
@@ -170,6 +179,7 @@ export default class App extends Component {
         let task_inps = TASKS[task].inputs[0]
         let task_outs = TASKS[task].outputs[0]
         let task_status = get_task_status(task)
+        let task_message_class = task_message.includes('PASSED') ? 'passed' : task_message.includes('FAILED') ? 'failed' : ''
 
         return (
             <div className="wrapper">
@@ -213,6 +223,7 @@ export default class App extends Component {
                 <div className="status-area">
                     <div className="status-bar">
                         <div className="status-eip">EIP: {eip}</div>
+                        <div className={"task-message " + task_message_class}>{task_message}</div>
                         <div className="spacer"></div>
                         <div className="status-code">Status: {status}</div>
                     </div>

@@ -119,7 +119,7 @@ button
     height: 100%
     border-bottom: 1px solid darken($dark-grey, 10%)
     display: grid
-    grid-template-columns: 10% auto 20%
+    grid-template-columns: 8% 15% auto 20%
     align-items: center
     font-family: 'Source Sans Pro'
     font-weight: 800
@@ -127,6 +127,13 @@ button
     text-transform: uppercase
     .status-eip
       margin-left: 8px
+    .task-message
+      padding: 0 8px
+    .task-message.passed
+      background: $green
+      color: $dark-grey
+    .task-message.failed
+      background: $red
     .status-code
       justify-self: end
       margin-right: 8px

@@ -23,6 +23,8 @@ export function save_task_status(task, code, solved) {
     } else {
         task_storage = JSON.parse(task_storage)
     }
+    var prev_task_status = task_storage[task]
+    if(prev_task_status && prev_task_status.solved && !solved) return //current attempt fails, but we have already solved this puzzle
     var task_status = { id: task, code, solved }
     task_storage[task] = task_status
     localStorage.setItem('tasks', JSON.stringify(task_storage))
