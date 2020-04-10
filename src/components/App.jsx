@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 
 const { Base32Computer, Status_Code } = require('../util/base32_computer')
-const { create_ins_blocks } = require('../util/util')
+const { create_ins_blocks, get_task_status } = require('../util/util')
+const TASKS = require('../tasks/tasks')
 
 export default class App extends Component {
     constructor(props) {
@@ -10,7 +11,8 @@ export default class App extends Component {
             code: '',
             B32C: null,
             graphical: null,
-            error_msg: ''
+            error_msg: '',
+            task: 0
         }
 
         this.graphical_ref = React.createRef()
@@ -89,13 +91,19 @@ export default class App extends Component {
     }
 
     render() {
-        let { code, B32C, graphical, error_msg } = this.state
+        let { code, B32C, graphical, error_msg, task } = this.state
         let eip = B32C ? B32C.get_eip() : '-'
         let status = B32C ? B32C.get_status() : -1
         status = Object.keys(Status_Code).find(x => Status_Code[x] == status) || 'OFF'
         let memory = B32C ? B32C.get_memory() : null
         let inputs = B32C ? B32C.get_inputs() : null
         let outputs = B32C ? B32C.get_outputs() : null
+
+        let task_name = TASKS[task].name
+        let task_desc = TASKS[task].desc
+        let task_inps = TASKS[task].inputs[0]
+        let task_outs = TASKS[task].outputs[0]
+        let task_status = get_task_status(task)
 
         return (
             <div className="wrapper">
@@ -108,7 +116,25 @@ export default class App extends Component {
                         <button onClick={this.run_code}>Submit</button>
                     </div>
                     <div className="task-area">
-                        Task Area
+                        <div className="task-details">
+                            <div className="task-name">{task_name}</div>
+                            <div className="task-desc">{task_desc}</div>
+                            <div className="task-inps-wrapper">Example input: <br/>
+                                <div className="task-inps">{JSON.stringify(task_inps)}</div>
+                            </div>
+                            <div className="task-outs-wrapper">Example output: <br/>
+                                <div className="task-outs">{JSON.stringify(task_outs)}</div>
+                            </div>
+                        </div>
+                        <div className="task-status">
+                            <div className="task-status-wrapper">Status: <span className={"task-status-accepted " + task_status.solved}>{task_status.solved ? 'Accepted' : 'Not Solved'}</span>
+                            </div>
+                        </div>
+                        <div className="control-buttons">
+                            <button onClick={this.step_code}>Prev</button>
+                            <button onClick={this.restart_code}>List</button>
+                            <button onClick={this.run_code}>Next</button>
+                        </div>
                     </div>
                 </div>
                 <div className="graphical-area" ref={this.graphical_ref}>

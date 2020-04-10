@@ -70,6 +70,35 @@ button
     display: flex
     flex-wrap: nowrap
     justify-content: space-between
+  .task-area
+    display: grid
+    grid-template-rows: auto 26px 40px
+    .task-details
+      padding: 8px
+      .task-name
+        font-family: 'Source Sans Pro'
+        font-weight: 800
+        font-size: 20px
+      .task-desc
+        padding: 8px 0
+        font-size: 18px
+      .task-inps-wrapper, .task-outs-wrapper
+        .task-inps, .task-outs
+          background: $black
+          font-family: Inconsolata
+          padding: 8px
+          margin: 4px 0
+    .task-status
+      padding: 8px
+      .task-status-wrapper
+        text-transform: uppercase
+        font-size: 12px
+        font-weight: 800
+        font-family: 'Source Sans Pro'
+        .task-status-accepted.false
+          color: $red
+        .task-status-accepted.true
+          color: $green
 
 .text-area
   textarea
@@ -90,7 +119,7 @@ button
     height: 100%
     border-bottom: 1px solid darken($dark-grey, 10%)
     display: grid
-    grid-template-columns: 10% auto 10%
+    grid-template-columns: 10% auto 20%
     align-items: center
     font-family: 'Source Sans Pro'
     font-weight: 800
