@@ -1,4 +1,5 @@
 import React from 'react'
+const Promise = require('bluebird')
 const { parse_code, INSTRUCTIONS } = require('./base32_computer')
 import InstructionBlock from '../components/InstructionBlock.jsx'
 
@@ -27,3 +28,13 @@ export function get_task_status(task) {
     }
     return task_status
 }
+
+export function sleep(ms) {
+    return new Promise(res => setTimeout(res, ms))
+}
+
+// https://stackoverflow.com/a/24660323/6047350
+export const promise_while = Promise.method((condition, action) => {
+    if(!condition()) return
+    return action().then(promise_while.bind(null, condition, action))
+})

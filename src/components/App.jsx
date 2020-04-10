@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
 
+const equals = require('array-equal')
+
 const { Base32Computer, Status_Code } = require('../util/base32_computer')
-const { create_ins_blocks, get_task_status } = require('../util/util')
+const { create_ins_blocks, get_task_status, promise_while, sleep } = require('../util/util')
 const TASKS = require('../tasks/tasks')
 
 export default class App extends Component {
@@ -17,10 +19,16 @@ export default class App extends Component {
 
         this.graphical_ref = React.createRef()
 
+        // Code Functions
         this.edit_code_text = this.edit_code_text.bind(this)
         this.run_code = this.run_code.bind(this)
         this.step_code = this.step_code.bind(this)
-        this.restart_code = this.restart_code.bind(this)
+        this.submit_code = this.submit_code.bind(this)
+        this.reset_code = this.reset_code.bind(this)
+
+        // Task functions
+        this.prev_task = this.prev_task.bind(this)
+        this.next_task = this.next_task.bind(this)
     }
 
     edit_code_text(e) {
@@ -36,58 +44,116 @@ export default class App extends Component {
         this.setState({ code: e.target.value, graphical, B32C: null, error_msg })
     }
 
-    load_code() {
-        try {
-            var B32C = new Base32Computer(this.state.code)
-            this.setState({ B32C })
-            return B32C
-        } catch(e) {
-            console.log('Error parsing code ' + e)
-        }
+    load_code(inps) {
+        return new Promise(res => {
+            try {
+                let { task, code } = this.state
+                if(!inps) inps = TASKS[task].inputs[0]
+                var B32C = new Base32Computer(code)
+                B32C.send_inps(inps)
+                var graphical = create_ins_blocks(code, 0)
+                this.setState({ B32C, graphical }, () => {
+                    return res(B32C)
+                })
+            } catch(e) {
+                console.log('Error parsing code ' + e)
+                return res(null)
+            }
+        })
     }
 
     run_code() {
-        try {
-            var step_interval = null
-            step_interval = setInterval(() => {
-                var status = this.step_code()
-                if(status != Status_Code.EXECUTING) {
-                    clearInterval(step_interval)
-                }
-            }, 50)
-        } catch(e) {
-            console.log('Runtime Error ' + e)
-            this.setState({ error_msg: e.toString() })
-        }
+        return new Promise(res => {
+            try {
+                var finished = false
+                var B32C = null
+                promise_while(() => !finished, () => {
+                    return new Promise(res1 => {
+                        sleep(100).then(() => {
+                            this.step_code().then(b => {
+                                if(!b || b.get_status() != Status_Code.EXECUTING) finished = true
+                                B32C = b
+                                return res1()
+                            })
+                        })
+                    })
+                }).then(() => res(B32C))
+            } catch(e) {
+                console.log('Runtime Error ' + e)
+                this.setState({ error_msg: e.toString() })
+                return res(false)
+            }
+        })
+    }
+
+    getB32C() {
+        return new Promise(res => {
+            if(this.state.B32C) return res(this.state.B32C)
+            this.load_code().then(res)
+        })
     }
 
     step_code() {
-        var B32C = null
-        if(!this.state.B32C) {
-            try {
-                B32C = this.load_code()
-            } catch(e) {
-                console.log('Step Error ' + e)
-            }
-        } else {
-            B32C = this.state.B32C
-            if(B32C.get_status() != Status_Code.EXECUTING && B32C.get_status() != Status_Code.INITIALISED) return false
-        }
-        try {
-            var status = B32C.step()
-            var eip = B32C.get_eip()
-            var graphical = create_ins_blocks(this.state.code, eip)
-            this.graphical_ref.current.scrollTo(0, (eip - 2) * 36)
-            this.setState({ graphical })
-            return status
-        } catch(e) {
-            console.log('Runtime Error ' + e)
-            this.setState({ error_msg: e.toString() })
-        }
+        return new Promise(res => {
+            this.getB32C().then(B32C => {
+                if(!B32C) return false
+                if(![Status_Code.EXECUTING, Status_Code.INITIALISED, Status_Code.WAITING_FOR_INPUT].includes(B32C.get_status())) return false
+                try {
+                    B32C.step()
+                    var eip = B32C.get_eip()
+                    var graphical = create_ins_blocks(this.state.code, eip)
+                    this.graphical_ref.current.scrollTo(0, (eip - 2) * 36)
+                    this.setState({ B32C, graphical }, () => {
+                        return res(B32C)
+                    })
+                } catch(e) {
+                    console.log('Runtime Error ' + e)
+                    this.setState({ error_msg: e.toString() })
+                    return res(false)
+                }
+            })
+        })
     }
 
-    restart_code() {
-        this.load_code()
+    reset_code() {
+        var graphical = create_ins_blocks(this.state.code, 0)
+        this.setState({ B32C: null, graphical })
+    }
+
+    submit_code() {
+        let { task } = this.state
+        task = TASKS[task]
+        var task_promises = task.inputs.map((inps, i) => {
+            return () => {
+                return new Promise(res => {
+                    this.load_code(inps).then(B32C => {
+                        if(!B32C) return res('bad')
+                        this.setState({ B32C }, () => {
+                            this.run_code().then(B32C => {
+                                return res(equals(B32C.get_outputs(), task.outputs[i]))
+                            })
+                        })
+                    })
+                })
+            }
+        })
+        task_promises.reduce((p, f) => p.then(() => sleep(100).then(f)), Promise.resolve([])).then(accepted => {
+
+        })
+    }
+
+    prev_task() {
+        let { task } = this.state
+        if(task == 0) return
+        task -= 1
+        this.setState({ task })
+    }
+
+    next_task() {
+        let { task } = this.state
+        if(task == TASKS.length - 1) return
+        task += 1
+        this.setState({ task })
     }
 
     render() {
@@ -112,8 +178,8 @@ export default class App extends Component {
                     <div className="control-buttons">
                         <button onClick={this.run_code}>Run</button>
                         <button onClick={this.step_code}>Step</button>
-                        <button onClick={this.restart_code}>Restart</button>
-                        <button onClick={this.run_code}>Submit</button>
+                        <button onClick={this.reset_code}>Reset</button>
+                        <button onClick={this.submit_code}>Submit</button>
                     </div>
                     <div className="task-area">
                         <div className="task-details">
@@ -131,9 +197,8 @@ export default class App extends Component {
                             </div>
                         </div>
                         <div className="control-buttons">
-                            <button onClick={this.step_code}>Prev</button>
-                            <button onClick={this.restart_code}>List</button>
-                            <button onClick={this.run_code}>Next</button>
+                            <button onClick={this.prev_task}>Prev</button>
+                            <button onClick={this.next_task}>Next</button>
                         </div>
                     </div>
                 </div>

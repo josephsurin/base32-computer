@@ -1,4 +1,4 @@
-const Status_Code = {
+export const Status_Code = {
     FINISHED: 0,
     EXITED: 10,
     RUNTIME_ERROR: 1,
@@ -97,9 +97,9 @@ function exit_op(mc, args) {
     mc.status = Status_Code.EXITED
 }
 
-const VALID_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'
+export const VALID_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'
 
-const INSTRUCTIONS = {
+export const INSTRUCTIONS = {
     'A': ['Addition', 3, add_op],
     'S': ['Subtraction', 3, sub_op],
     'M': ['Multiplication', 3, mul_op],
@@ -115,7 +115,7 @@ const INSTRUCTIONS = {
     'Q': ['Exit', 0, exit_op]
 }
 
-function parse_code(code) {
+export function parse_code(code) {
     code = code.replace(/(\s|\n)/g, '')
     var instructions = []
     var i = 0
@@ -141,7 +141,7 @@ function parse_code(code) {
     return instructions
 }
 
-class Base32Computer {
+export class Base32Computer {
     constructor(code) {
         this.eip = 0
         this.ic = 0
@@ -210,5 +210,3 @@ class Base32Computer {
         return this.status
     }
 }
-
-module.exports = { Base32Computer, Status_Code, INSTRUCTIONS, VALID_CHARS, parse_code }
