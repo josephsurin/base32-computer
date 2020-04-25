@@ -14,8 +14,8 @@ Each `(opcode, args)` pair form an instruction. Instructions are labeled by thei
 
 List of opcodes:
 
-|Opcode|Instruction|Args|Description|
-|---|---|---|---|
+|Opcode|Instruction|#Args|Args|Description|
+|---|---|---|---|---|
 |`A`|Addition|3|`a1` `a2` `a3`| Stores the result of `a1` + `a2` in `a3` |
 |`S`|Subtraction|3|`a1` `a2` `a3`| Stores the result of `a1` - `a2` in `a3` |
 |`M`|Multiplication|3|`a1` `a2` `a3`| Stores the result of `a1` * `a2` in `a3` |
