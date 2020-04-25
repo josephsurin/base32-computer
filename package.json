@@ -7,7 +7,7 @@
   "scripts": {
     "start": "webpack-dev-server",
     "build": "webpack --mode production --config webpack.config.js",
-    "deploy": "rm -rf build && npm run build && gh-pages build"
+    "deploy": "rm -rf build && npm run build && gh-pages -d build"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
