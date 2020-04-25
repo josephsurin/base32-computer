@@ -5,7 +5,9 @@
   "author": "Joseph Surin <joseph.surin@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "webpack-dev-server"
+    "start": "webpack-dev-server",
+    "build": "webpack --mode production --config webpack.config.js",
+    "deploy": "rm -rf build && npm run build && gh-pages build"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
