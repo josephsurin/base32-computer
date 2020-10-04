@@ -1,5 +1,7 @@
 # Base32 Computer Programming Puzzles
 
+#### Live at https://b32c.josephsurin.me/
+
 The Base32 Computer reads and executes `b32 programs`. A `b32 program` is a string of characters made up of the characters in the standard base32 alphabet `ABCDEFGHIJKLMNOPQRSTUVWXYZ234567`. The Base32 Computer has 32 registers which it can read/write data to. Each register is identified by a character in the base32 alphabet and at the start of execution, all registers have the value `0`.
 
 The syntax for a `b32 program` follows the following structure:
